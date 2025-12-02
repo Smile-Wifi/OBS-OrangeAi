@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - StreamPro Studio</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="theme-color" content="#00d4ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StreamPro Studio">
+    <meta name="application-name" content="StreamPro Studio">
+    <meta name="msapplication-TileColor" content="#00d4ff">
+    <meta name="msapplication-TileImage" content="resources/icon-192.png">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Icons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="resources/icon-32.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="resources/icon-192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="resources/icon-512.png">
+    <link rel="apple-touch-icon" href="resources/icon-192.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-bg: #0d0d0d;
+            --secondary-bg: #1a1a1a;
+            --panel-bg: #2d2d2d;
+            --accent-blue: #00d4ff;
+            --accent-green: #00ff88;
+            --accent-orange: #ff8c00;
+            --accent-red: #ff4757;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --border-color: #404040;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 136, 0.1) 0%, transparent 50%);
+        }
+
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+        .font-display { font-family: 'Poppins', sans-serif; }
+
+        .glass-nav {
+            backdrop-filter: blur(20px);
+            background: rgba(26, 26, 26, 0.8);
+            border-bottom: 1px solid rgba(64, 64, 64, 0.3);
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #0099cc);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: var(--panel-bg);
+            border-color: var(--accent-blue);
+        }
+
+        .settings-nav {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .settings-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .settings-nav-item:hover {
+            background: var(--secondary-bg);
+        }
+
+        .settings-nav-item.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .settings-nav-item.active .settings-icon {
+            color: white;
+        }
+
+        .settings-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            color: var(--text-secondary);
+        }
+
+        .settings-content {
+            display: none;
+        }
+
+        .settings-content.active {
+            display: block;
+        }
+
+        .setting-group {
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            flex: 1;
+        }
+
+        .setting-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .setting-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .setting-control {
+            margin-left: 24px;
+        }
+
+        .setting-input {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            min-width: 200px;
+        }
+
+        .setting-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .setting-select {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+
+        .setting-toggle {
+            width: 48px;
+            height: 24px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .setting-toggle.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+
+        .setting-toggle::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .setting-toggle.active::after {
+            transform: translateX(24px);
+        }
+
+        .platform-card {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 16px;
+        }
+
+        .platform-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 212, 255, 0.2);
+        }
+
+        .platform-card.connected {
+            border-color: var(--accent-green);
+            background: rgba(0, 255, 136, 0.05);
+        }
+
+        .platform-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .platform-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+        }
+
+        .platform-status {
+            margin-left: auto;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .platform-status.connected {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .platform-status.disconnected {
+            background: var(--secondary-bg);
+            color: var(--text-secondary);
+        }
+
+        .quality-presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .quality-preset {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quality-preset:hover {
+            border-color: var(--accent-blue);
+            background: var(--panel-bg);
+        }
+
+        .quality-preset.selected {
+            border-color: var(--accent-blue);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .hotkey-input {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            text-align: center;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .hotkey-input:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .hotkey-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            background: rgba(0, 212, 255, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .performance-chart {
+            width: 100%;
+            height: 300px;
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .quality-presets {
+                grid-template-columns: 1fr;
+            }
+            
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .setting-control {
+                margin-left: 0;
+                margin-top: 12px;
+                width: 100%;
+            }
+            
+            .setting-input {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="glass-nav fixed top-0 left-0 right-0 z-50 px-6 py-4">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center space-x-8">
+                <h1 class="font-display text-2xl font-bold text-white">StreamPro Studio</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="index.html" class="text-gray-300 hover:text-blue-400 transition-colors font-medium">Dashboard</a>
+                    <a href="scenes.html" class="text-gray-300 hover:text-blue-400 transition-colors font-medium">Scenes</a>
+                    <a href="audio.html" class="text-gray-300 hover:text-blue-400 transition-colors font-medium">Audio</a>
+                    <a href="settings.html" class="text-white hover:text-blue-400 transition-colors font-medium border-b-2 border-blue-400">Settings</a>
+                </div>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button class="btn-primary" onclick="saveAllSettings()">Save Settings</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-24 px-6 pb-6">
+        <!-- Page Header -->
+        <section class="fade-in mb-8">
+            <div class="text-center">
+                <h2 class="font-display text-4xl md:text-5xl font-bold mb-4">
+                    <span class="text-blue-400">Settings</span>
+                    <span class="text-white">& Configuration</span>
+                </h2>
+                <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+                    Configure streaming platforms, recording settings, and system preferences for optimal performance.
+                </p>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Settings Navigation -->
+            <div class="lg:col-span-1">
+                <div class="settings-nav fade-in">
+                    <div class="settings-nav-item active" onclick="showSettings('streaming')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h6a2 2 0 012 2v8a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z"/>
+                        </svg>
+                        <span>Streaming</span>
+                    </div>
+                    
+                    <div class="settings-nav-item" onclick="showSettings('recording')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm0 2v8h12V6H4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Recording</span>
+                    </div>
+                    
+                    <div class="settings-nav-item" onclick="showSettings('audio')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.776L4.5 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.5l3.883-3.776zM15 8a3 3 0 110-6 3 3 0 010 6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Audio</span>
+                    </div>
+                    
+                    <div class="settings-nav-item" onclick="showSettings('video')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Video</span>
+                    </div>
+                    
+                    <div class="settings-nav-item" onclick="showSettings('hotkeys')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M17 10a1 1 0 01-1 1H5.414l2.293 2.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 1.414L5.414 9H16a1 1 0 011 1z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Hotkeys</span>
+                    </div>
+                    
+                    <div class="settings-nav-item" onclick="showSettings('advanced')">
+                        <svg class="settings-icon" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+                        </svg>
+                        <span>Advanced</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings Content -->
+            <div class="lg:col-span-3">
+                <!-- Streaming Settings -->
+                <div id="streaming-settings" class="settings-content active">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Streaming Platforms</h3>
+                        
+                        <div class="platform-card" onclick="connectPlatform('twitch')">
+                            <div class="platform-header">
+                                <div class="platform-logo bg-purple-600">TW</div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium">Twitch</h4>
+                                    <p class="text-sm text-gray-400">Stream to Twitch.tv</p>
+                                </div>
+                                <div class="platform-status connected">Connected</div>
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                Username: streampro_user • Stream Key: ••••••••••••••
+                            </div>
+                        </div>
+
+                        <div class="platform-card" onclick="connectPlatform('youtube')">
+                            <div class="platform-header">
+                                <div class="platform-logo bg-red-600">YT</div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium">YouTube</h4>
+                                    <p class="text-sm text-gray-400">Stream to YouTube Live</p>
+                                </div>
+                                <div class="platform-status disconnected">Disconnected</div>
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                Click to connect your YouTube account
+                            </div>
+                        </div>
+
+                        <div class="platform-card" onclick="connectPlatform('facebook')">
+                            <div class="platform-header">
+                                <div class="platform-logo bg-blue-600">FB</div>
+                                <div class="flex-1">
+                                    <h4 class="font-medium">Facebook Gaming</h4>
+                                    <p class="text-sm text-gray-400">Stream to Facebook Gaming</p>
+                                </div>
+                                <div class="platform-status disconnected">Disconnected</div>
+                            </div>
+                            <div class="text-sm text-gray-400">
+                                Click to connect your Facebook Gaming account
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Stream Quality</h3>
+                        
+                        <div class="quality-presets">
+                            <div class="quality-preset selected" onclick="selectQualityPreset(this, '720p')">
+                                <h4 class="font-medium mb-2">720p 60fps</h4>
+                                <p class="text-sm text-gray-400 mb-2">Good quality, stable streaming</p>
+                                <div class="text-xs font-mono text-blue-400">
+                                    1280x720 • 60 FPS • 4500 kbps
+                                </div>
+                            </div>
+
+                            <div class="quality-preset" onclick="selectQualityPreset(this, '1080p')">
+                                <h4 class="font-medium mb-2">1080p 60fps</h4>
+                                <p class="text-sm text-gray-400 mb-2">High quality streaming</p>
+                                <div class="text-xs font-mono text-blue-400">
+                                    1920x1080 • 60 FPS • 6000 kbps
+                                </div>
+                            </div>
+
+                            <div class="quality-preset" onclick="selectQualityPreset(this, '1440p')">
+                                <h4 class="font-medium mb-2">1440p 60fps</h4>
+                                <p class="text-sm text-gray-400 mb-2">Ultra high quality</p>
+                                <div class="text-xs font-mono text-blue-400">
+                                    2560x1440 • 60 FPS • 9000 kbps
+                                </div>
+                            </div>
+
+                            <div class="quality-preset" onclick="selectQualityPreset(this, 'custom')">
+                                <h4 class="font-medium mb-2">Custom</h4>
+                                <p class="text-sm text-gray-400 mb-2">Manual configuration</p>
+                                <div class="text-xs font-mono text-blue-400">
+                                    Configure manually
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recording Settings -->
+                <div id="recording-settings" class="settings-content">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Recording Settings</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Recording Path</div>
+                                <div class="setting-description">Location where recordings are saved</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="setting-input" value="C:/Users/StreamPro/Recordings" readonly onclick="selectRecordingPath()">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Recording Quality</div>
+                                <div class="setting-description">Quality preset for local recordings</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="ultrafast">Ultra Fast</option>
+                                    <option value="superfast">Super Fast</option>
+                                    <option value="veryfast" selected>Very Fast</option>
+                                    <option value="faster">Faster</option>
+                                    <option value="fast">Fast</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="slow">Slow</option>
+                                    <option value="slower">Slower</option>
+                                    <option value="veryslow">Very Slow</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Recording Format</div>
+                                <div class="setting-description">File format for recordings</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="mp4" selected>MP4</option>
+                                    <option value="mkv">MKV</option>
+                                    <option value="flv">FLV</option>
+                                    <option value="mov">MOV</option>
+                                    <option value="avi">AVI</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Auto-Record Streams</div>
+                                <div class="setting-description">Automatically record when streaming</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Replay Buffer</div>
+                                <div class="setting-description">Enable replay buffer for highlights</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Settings -->
+                <div id="audio-settings" class="settings-content">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Audio Settings</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Sample Rate</div>
+                                <div class="setting-description">Audio sample rate for processing</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="44100">44.1 kHz</option>
+                                    <option value="48000" selected>48 kHz</option>
+                                    <option value="96000">96 kHz</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Channels</div>
+                                <div class="setting-description">Number of audio channels</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="mono">Mono</option>
+                                    <option value="stereo" selected>Stereo</option>
+                                    <option value="surround">5.1 Surround</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Global Audio Devices</div>
+                                <div class="setting-description">Use global audio device settings</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Low Latency Mode</div>
+                                <div class="setting-description">Reduce audio latency for monitoring</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Settings -->
+                <div id="video-settings" class="settings-content">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Video Settings</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Base (Canvas) Resolution</div>
+                                <div class="setting-description">Resolution of the preview canvas</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="1280x720">1280x720</option>
+                                    <option value="1920x1080" selected>1920x1080</option>
+                                    <option value="2560x1440">2560x1440</option>
+                                    <option value="3840x2160">3840x2160</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Output (Scaled) Resolution</div>
+                                <div class="setting-description">Resolution of the final stream</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="1280x720">1280x720</option>
+                                    <option value="1920x1080" selected>1920x1080</option>
+                                    <option value="2560x1440">2560x1440</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Downscale Filter</div>
+                                <div class="setting-description">Filter used for downscaling</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="bilinear">Bilinear</option>
+                                    <option value="bicubic" selected>Bicubic</option>
+                                    <option value="lanczos">Lanczos</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">FPS Type</div>
+                                <div class="setting-description">Frame rate type for output</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="30">30 FPS</option>
+                                    <option value="60" selected>60 FPS</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Video Encoder</div>
+                                <div class="setting-description">Encoder for video compression</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="x264" selected>x264</option>
+                                    <option value="nvenc">NVIDIA NVENC</option>
+                                    <option value="amd">AMD VCE</option>
+                                    <option value="intel">Intel Quick Sync</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Hotkeys Settings -->
+                <div id="hotkeys-settings" class="settings-content">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Hotkey Configuration</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Start/Stop Streaming</div>
+                                <div class="setting-description">Toggle streaming on/off</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="hotkey-input" value="Ctrl+Shift+S" readonly onclick="recordHotkey(this)">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Start/Stop Recording</div>
+                                <div class="setting-description">Toggle recording on/off</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="hotkey-input" value="Ctrl+Shift+R" readonly onclick="recordHotkey(this)">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Mute/Unmute Microphone</div>
+                                <div class="setting-description">Toggle microphone mute</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="hotkey-input" value="Ctrl+Shift+M" readonly onclick="recordHotkey(this)">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Switch Scene</div>
+                                <div class="setting-description">Cycle through scenes</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="hotkey-input" value="Ctrl+Tab" readonly onclick="recordHotkey(this)">
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Save Replay</div>
+                                <div class="setting-description">Save replay buffer</div>
+                            </div>
+                            <div class="setting-control">
+                                <input type="text" class="hotkey-input" value="Ctrl+Shift+F12" readonly onclick="recordHotkey(this)">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Advanced Settings -->
+                <div id="advanced-settings" class="settings-content">
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Advanced Settings</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Process Priority</div>
+                                <div class="setting-description">System priority for the application</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="idle">Idle</option>
+                                    <option value="below_normal">Below Normal</option>
+                                    <option value="normal" selected>Normal</option>
+                                    <option value="above_normal">Above Normal</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Renderer</div>
+                                <div class="setting-description">Graphics rendering backend</div>
+                            </div>
+                            <div class="setting-control">
+                                <select class="setting-select">
+                                    <option value="direct3d11" selected>Direct3D 11</option>
+                                    <option value="opengl">OpenGL</option>
+                                    <option value="vulkan">Vulkan</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Enable Browser Source Hardware Acceleration</div>
+                                <div class="setting-description">Use GPU acceleration for browser sources</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Enable Media File Caching</div>
+                                <div class="setting-description">Cache media files in memory</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-label">
+                                <div class="setting-title">Performance Monitoring</div>
+                                <div class="setting-description">Enable performance statistics</div>
+                            </div>
+                            <div class="setting-control">
+                                <div class="setting-toggle active" onclick="toggleSetting(this)"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-group fade-in">
+                        <h3 class="font-display text-xl font-semibold mb-6">Performance Statistics</h3>
+                        <div class="performance-chart" id="performance-chart"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        // Settings functionality
+        class SettingsManager {
+            constructor() {
+                this.currentSection = 'streaming';
+                this.settings = {
+                    streaming: {
+                        platforms: {
+                            twitch: { connected: true, username: 'streampro_user' },
+                            youtube: { connected: false },
+                            facebook: { connected: false }
+                        },
+                        quality: '720p'
+                    },
+                    recording: {
+                        path: 'C:/Users/StreamPro/Recordings',
+                        quality: 'veryfast',
+                        format: 'mp4',
+                        autoRecord: true,
+                        replayBuffer: true
+                    }
+                };
+                this.init();
+            }
+
+            init() {
+                this.setupEventListeners();
+                this.animatePageLoad();
+                this.initializePerformanceChart();
+            }
+
+            setupEventListeners() {
+                // Settings navigation
+                document.querySelectorAll('.settings-nav-item').forEach(item => {
+                    item.addEventListener('click', (e) => {
+                        const section = e.currentTarget.onclick.toString().match(/showSettings\('([^']+)'\)/)[1];
+                        this.showSettings(section);
+                    });
+                });
+            }
+
+            showSettings(section) {
+                // Update navigation
+                document.querySelectorAll('.settings-nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                event.target.closest('.settings-nav-item').classList.add('active');
+
+                // Update content
+                document.querySelectorAll('.settings-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                document.getElementById(section + '-settings').classList.add('active');
+
+                this.currentSection = section;
+                
+                // Animate content
+                anime({
+                    targets: `#${section}-settings .setting-group`,
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 400,
+                    delay: anime.stagger(100),
+                    easing: 'easeOutQuad'
+                });
+            }
+
+            initializePerformanceChart() {
+                const chartDom = document.getElementById('performance-chart');
+                const myChart = echarts.init(chartDom);
+
+                const option = {
+                    backgroundColor: 'transparent',
+                    title: {
+                        text: 'System Performance',
+                        textStyle: {
+                            color: '#ffffff'
+                        }
+                    },
+                    tooltip: {
+                        trigger: 'axis',
+                        backgroundColor: '#2d2d2d',
+                        borderColor: '#404040',
+                        textStyle: {
+                            color: '#ffffff'
+                        }
+                    },
+                    legend: {
+                        data: ['CPU Usage', 'RAM Usage', 'GPU Usage'],
+                        textStyle: {
+                            color: '#b3b3b3'
+                        }
+                    },
+                    grid: {
+                        left: '3%',
+                        right: '4%',
+                        bottom: '3%',
+                        containLabel: true
+                    },
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: ['00:00', '00:30', '01:00', '01:30', '02:00', '02:30', '03:00'],
+                        axisLine: {
+                            lineStyle: {
+                                color: '#404040'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#b3b3b3'
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#404040'
+                            }
+                        },
+                        axisLabel: {
+                            color: '#b3b3b3'
+                        },
+                        splitLine: {
+                            lineStyle: {
+                                color: '#404040'
+                            }
+                        }
+                    },
+                    series: [
+                        {
+                            name: 'CPU Usage',
+                            type: 'line',
+                            data: [25, 32, 28, 35, 30, 38, 33],
+                            lineStyle: {
+                                color: '#00d4ff'
+                            },
+                            areaStyle: {
+                                color: {
+                                    type: 'linear',
+                                    x: 0,
+                                    y: 0,
+                                    x2: 0,
+                                    y2: 1,
+                                    colorStops: [{
+                                        offset: 0, color: 'rgba(0, 212, 255, 0.3)'
+                                    }, {
+                                        offset: 1, color: 'rgba(0, 212, 255, 0.05)'
+                                    }]
+                                }
+                            }
+                        },
+                        {
+                            name: 'RAM Usage',
+                            type: 'line',
+                            data: [45, 42, 48, 44, 46, 43, 47],
+                            lineStyle: {
+                                color: '#00ff88'
+                            }
+                        },
+                        {
+                            name: 'GPU Usage',
+                            type: 'line',
+                            data: [15, 18, 16, 20, 17, 22, 19],
+                            lineStyle: {
+                                color: '#ff8c00'
+                            }
+                        }
+                    ]
+                };
+
+                myChart.setOption(option);
+
+                // Animate chart data
+                setInterval(() => {
+                    const newData = option.series.map(series => {
+                        return series.data.slice(1).concat(Math.random() * 50 + 10);
+                    });
+                    
+                    myChart.setOption({
+                        series: [
+                            { data: newData[0] },
+                            { data: newData[1] },
+                            { data: newData[2] }
+                        ]
+                    });
+                }, 2000);
+            }
+
+            animatePageLoad() {
+                anime({
+                    targets: '.fade-in',
+                    opacity: [0, 1],
+                    translateY: [20, 0],
+                    duration: 800,
+                    easing: 'easeOutQuad'
+                });
+
+                anime({
+                    targets: '.settings-nav-item',
+                    opacity: [0, 1],
+                    translateX: [-20, 0],
+                    duration: 600,
+                    delay: anime.stagger(100),
+                    easing: 'easeOutQuad'
+                });
+            }
+
+            showNotification(message) {
+                const notification = document.createElement('div');
+                notification.className = 'fixed top-20 right-6 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg z-50 transform translate-x-full';
+                notification.textContent = message;
+                
+                document.body.appendChild(notification);
+                
+                anime({
+                    targets: notification,
+                    translateX: [400, 0],
+                    duration: 300,
+                    easing: 'easeOutQuad'
+                });
+                
+                setTimeout(() => {
+                    anime({
+                        targets: notification,
+                        translateX: [0, 400],
+                        opacity: [1, 0],
+                        duration: 300,
+                        easing: 'easeInQuad',
+                        complete: () => notification.remove()
+                    });
+                }, 3000);
+            }
+        }
+
+        // Global functions
+        function showSettings(section) {
+            if (window.settingsManager) {
+                window.settingsManager.showSettings(section);
+            }
+        }
+
+        function connectPlatform(platform) {
+            if (window.settingsManager) {
+                window.settingsManager.showNotification(`Connecting to ${platform}...`);
+                // Simulate connection process
+                setTimeout(() => {
+                    window.settingsManager.showNotification(`Successfully connected to ${platform}!`);
+                    const platformCard = event.target.closest('.platform-card');
+                    const status = platformCard.querySelector('.platform-status');
+                    status.textContent = 'Connected';
+                    status.className = 'platform-status connected';
+                    platformCard.classList.add('connected');
+                }, 2000);
+            }
+        }
+
+        function selectQualityPreset(element, quality) {
+            document.querySelectorAll('.quality-preset').forEach(preset => {
+                preset.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            
+            if (window.settingsManager) {
+                window.settingsManager.settings.streaming.quality = quality;
+                window.settingsManager.showNotification(`Quality preset changed to ${quality}`);
+            }
+        }
+
+        function toggleSetting(element) {
+            element.classList.toggle('active');
+            const isActive = element.classList.contains('active');
+            
+            if (window.settingsManager) {
+                window.settingsManager.showNotification(`Setting ${isActive ? 'enabled' : 'disabled'}`);
+            }
+        }
+
+        function selectRecordingPath() {
+            if (window.settingsManager) {
+                window.settingsManager.showNotification('Recording path selection dialog opened');
+            }
+        }
+
+        function recordHotkey(input) {
+            input.value = 'Press keys...';
+            input.focus();
+            
+            const handleKeydown = (e) => {
+                e.preventDefault();
+                const keys = [];
+                if (e.ctrlKey) keys.push('Ctrl');
+                if (e.shiftKey) keys.push('Shift');
+                if (e.altKey) keys.push('Alt');
+                if (e.metaKey) keys.push('Meta');
+                
+                const key = e.key;
+                if (!['Control', 'Shift', 'Alt', 'Meta'].includes(key)) {
+                    keys.push(key);
+                }
+                
+                input.value = keys.join('+');
+                document.removeEventListener('keydown', handleKeydown);
+                input.blur();
+                
+                if (window.settingsManager) {
+                    window.settingsManager.showNotification('Hotkey assigned successfully');
+                }
+            };
+            
+            document.addEventListener('keydown', handleKeydown);
+            
+            input.addEventListener('blur', () => {
+                document.removeEventListener('keydown', handleKeydown);
+                if (input.value === 'Press keys...') {
+                    input.value = 'Ctrl+Shift+S';
+                }
+            });
+        }
+
+        function saveAllSettings() {
+            if (window.settingsManager) {
+                window.settingsManager.showNotification('All settings saved successfully!');
+                
+                // Animate save confirmation
+                anime({
+                    targets: '.btn-primary',
+                    scale: [1, 1.1, 1],
+                    duration: 300,
+                    easing: 'easeInOutQuad'
+                });
+            }
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.settingsManager = new SettingsManager();
+        });
+    </script>
+</body>
+</html>
